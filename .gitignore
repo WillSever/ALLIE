@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Virtual environments
+.venv/
+myenv/
+venv/
+env/
+
+# IDE/editor
+.vscode/
+.idea/
+
+# Local machine configs
+configs/*local*.yaml
+!configs/allie_base.yaml
+
+# Local data and generated artifacts
+data/*
+!data/.gitkeep
+!data/README.md
+
+checkpoints/*
+!checkpoints/.gitkeep
+
+results/*
+!results/predictions/
+!results/comparisons/
+!results/metrics/
+results/predictions/*
+results/comparisons/*
+results/metrics/*
+!results/predictions/.gitkeep
+!results/comparisons/.gitkeep
+!results/metrics/.gitkeep
+
+# Model files
+*.h5
+*.keras
+*.pth
+*.pt
+
+# Logs and reports
+*.log
+*.csv
+*.json

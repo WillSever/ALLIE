@@ -12,7 +12,14 @@ def configure_windows_dll_paths():
     if conda_prefix:
         candidates.append(Path(conda_prefix))
 
-    candidates.append(Path(r"C:\Users\willi\miniconda3\envs\myenv"))
+    conda_env = os.environ.get("CONDA_ENV")
+    if conda_env:
+        candidates.append(Path(conda_env))
+
+    user_profile = os.environ.get("USERPROFILE")
+    if user_profile:
+        candidates.append(Path(user_profile) / "miniconda3" / "envs" / "myenv")
+        candidates.append(Path(user_profile) / "anaconda3" / "envs" / "myenv")
 
     for env_path in candidates:
         for dll_dir in [env_path, env_path / "Library" / "bin", env_path / "Scripts"]:
@@ -23,4 +30,3 @@ def configure_windows_dll_paths():
                         os.add_dll_directory(str(dll_dir))
                     except OSError:
                         pass
-

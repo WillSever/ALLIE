@@ -1,14 +1,61 @@
 # Private GitHub Repository Setup
 
-This project should be uploaded without datasets, checkpoints, or generated
-results. The `.gitignore` already excludes:
+This project is configured to publish the ALLIE code, the publication
+checkpoints, and the publication prediction/comparison images.
 
-- `data/Real_captured/`
-- trained models in `checkpoints/`
-- generated predictions and metrics in `results/`
-- local Python/Conda environments
+It intentionally keeps these files local:
 
-## 1. Initialize Git
+- datasets in `data/`;
+- metric CSV files;
+- local experiment folders in `runs/`;
+- virtual environments.
+
+## 1. Configure Git Identity
+
+Run once on your machine:
+
+```powershell
+git config --global user.name "Your Name"
+git config --global user.email "YOUR_GITHUB_EMAIL"
+```
+
+Or configure only this repository:
+
+```powershell
+git config user.name "Your Name"
+git config user.email "YOUR_GITHUB_EMAIL"
+```
+
+## 2. Enable Git LFS
+
+The checkpoint files are large, so use Git LFS:
+
+```powershell
+git lfs install
+```
+
+The repository already contains `.gitattributes` for:
+
+- `checkpoints/allie_base.h5`
+- `checkpoints/allie_384x256.h5`
+
+If source code that affects training was changed, regenerate the publication
+artifacts before committing:
+
+```powershell
+python scripts\train_tf.py --config configs\allie_base.yaml --require-gpu --overwrite
+python scripts\infer_tf.py --config configs\allie_base.yaml
+python scripts\train_tf.py --config configs\allie_384x256.yaml --require-gpu --new-run
+```
+
+Then run inference for the 384x256 experiment with the run id created by the
+training command:
+
+```powershell
+python scripts\infer_tf.py --config configs\allie_384x256.yaml --run-id YOUR_RUN_ID
+```
+
+## 3. Initialize Git
 
 From the project root:
 
@@ -17,46 +64,52 @@ git init
 git status --short
 ```
 
-## 2. Add Files
+## 4. Add Files
 
 ```powershell
+git add .gitattributes
 git add .
 git status --short
 ```
 
-Before committing, check that large dataset images are not listed.
+Before committing, check that:
 
-## 3. Commit
+- `data/Real_captured/` is not listed;
+- `results/metrics/*.csv` is not listed;
+- `runs/` is not listed;
+- `checkpoints/allie_base.h5` is listed as a Git LFS file;
+- `checkpoints/allie_384x256.h5` is listed as a Git LFS file.
+
+You can check the LFS-tracked files with:
 
 ```powershell
-git commit -m "Initial ALLIE project structure"
+git lfs ls-files
 ```
 
-## 4. Create Private Repository On GitHub
+## 5. Commit
 
-In GitHub:
+```powershell
+git commit -m "Publish base ALLIE project"
+```
 
-1. Click **New repository**.
-2. Repository name: `ALLIE`.
-3. Visibility: **Private**.
-4. Do not initialize with README, `.gitignore`, or license because this project
-   already has local files.
-5. Create repository.
+## 6. Connect Local Project To GitHub
 
-## 5. Connect Local Project To GitHub
-
-Replace `YOUR_USERNAME` with your GitHub username:
+For the current private repository:
 
 ```powershell
 git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/ALLIE.git
+git remote add origin https://github.com/WillSever/ALLIE.git
 git push -u origin main
 ```
 
-If Git asks for login, use the browser login flow or a GitHub personal access
-token through Git Credential Manager.
+If `origin` already exists:
 
-## 6. Later Updates
+```powershell
+git remote set-url origin https://github.com/WillSever/ALLIE.git
+git push -u origin main
+```
+
+## 7. Later Updates
 
 ```powershell
 git status --short
@@ -65,3 +118,11 @@ git commit -m "Describe the change"
 git push
 ```
 
+## 8. Downloading On Another Machine
+
+```powershell
+git clone https://github.com/WillSever/ALLIE.git
+cd ALLIE
+git lfs install
+git lfs pull
+```

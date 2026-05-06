@@ -39,3 +39,7 @@ loss:
 inference:
   save_predictions: true
   save_comparisons: true
+
+experiments:
+  runs_root: runs
+  default_prefix: treino

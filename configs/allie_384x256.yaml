@@ -1,0 +1,45 @@
+project:
+  name: ALLIE
+  seed: 42
+
+paths:
+  train_low_dir: data/Real_captured/Train/Low
+  train_normal_dir: data/Real_captured/Train/Normal
+  test_low_dir: data/Real_captured/Test/Low
+  test_normal_dir: data/Real_captured/Test/Normal
+  checkpoint_path: checkpoints/allie_384x256.h5
+  predictions_dir: results/predictions_384x256
+  comparisons_dir: results/comparisons_384x256
+  metrics_path: results/metrics/allie_384x256_metrics.csv
+
+image:
+  width: 384
+  height: 256
+  channels: 3
+
+training:
+  batch_size: 1
+  epochs: 39
+  validation_split: 0.2
+  early_stopping_patience: 10
+  learning_rate: 0.0005
+  dropout: 0.2
+
+model:
+  architecture: paper_base_4_blocks
+  encoder_filters: [64, 128, 256, 512]
+  bottleneck_filters: 512
+  decoder_filters: [512, 256, 128, 64]
+  kernel_size: 3
+
+loss:
+  mse_weight: 0.73
+  ssim_weight: 0.27
+
+inference:
+  save_predictions: true
+  save_comparisons: true
+
+experiments:
+  runs_root: runs
+  default_prefix: treino

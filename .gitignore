@@ -19,33 +19,48 @@ env/
 # Local machine configs
 configs/*local*.yaml
 !configs/allie_base.yaml
+!configs/allie_384x256.yaml
 
-# Local data and generated artifacts
+# Datasets stay local unless the owner intentionally force-adds them.
 data/*
 !data/.gitkeep
 !data/README.md
 
+# Publication checkpoint is intentionally tracked with Git LFS.
 checkpoints/*
 !checkpoints/.gitkeep
+!checkpoints/allie_base.h5
+!checkpoints/allie_384x256.h5
 
+# Publication images are intentionally tracked.
 results/*
 !results/predictions/
 !results/comparisons/
+!results/predictions_384x256/
+!results/comparisons_384x256/
 !results/metrics/
-results/predictions/*
-results/comparisons/*
-results/metrics/*
-!results/predictions/.gitkeep
-!results/comparisons/.gitkeep
+!results/predictions/**
+!results/comparisons/**
+!results/predictions_384x256/**
+!results/comparisons_384x256/**
 !results/metrics/.gitkeep
 
-# Model files
+# Local experiment outputs and local metrics are not published by default.
+runs/
+results/experiments/
+checkpoints/experiments/
+results/metrics/*
+!results/metrics/.gitkeep
+
+# Other model files stay local by default.
 *.h5
+!checkpoints/allie_base.h5
+!checkpoints/allie_384x256.h5
 *.keras
 *.pth
 *.pt
 
-# Logs and reports
+# Logs and local reports
 *.log
 *.csv
 *.json

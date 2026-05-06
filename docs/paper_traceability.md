@@ -18,6 +18,7 @@ publication.
 - Architecture used in this repository:
   - four encoder blocks;
   - bottleneck at `15x20x512` when the input is `240x320`;
+  - bottleneck at `16x24x512` when the input is `256x384`;
   - four decoder blocks with skip connections.
 - Loss:
   - `0.73 * MSE + 0.27 * SSIM_loss`.
@@ -51,12 +52,16 @@ Source: `allie_tun.ipynb`.
   - `[3, 5, 3, 5, 3, 5, 3, 5, 5]`.
 - Model format:
   - `.h5`.
+- Weight initialization:
+  - the publication-oriented implementation uses Keras defaults;
+  - no explicit He initialization is used.
 
 ## Engineering Adaptation
 
 These changes organize the project for publication:
 
 - paths moved to `configs/allie_base.yaml`;
+- aspect-ratio preserving test config added as `configs/allie_384x256.yaml`;
 - paper-base architecture moved to `src/allie/model_tf.py`;
 - loss moved to `src/allie/losses_tf.py`;
 - dataset loading moved to `src/allie/data.py`;
@@ -66,7 +71,9 @@ These changes organize the project for publication:
 - checkpoints saved under `checkpoints/`;
 - predicted images saved under `results/predictions/`;
 - comparison images saved under `results/comparisons/`;
-- metrics saved under `results/metrics/`.
+- local experiment runs saved under `runs/`;
+- metrics saved locally under `results/metrics/` or under each `runs/<run_id>/`.
+- best validation checkpoint saved under `checkpoints/`.
 
 ## Decisions And Known Divergences
 
@@ -74,7 +81,12 @@ These changes organize the project for publication:
   blocks.
 - Note: the current Keras notebook used five encoder blocks during exploration.
 - Decision: this repository keeps the practical `320x240` training resolution
-  so it can run on GPUs with about 8 GB of VRAM.
+  as the default publication setting so it can run on GPUs with about 8 GB of
+  VRAM.
+- Decision: `configs/allie_384x256.yaml` is provided as a local experiment
+  configuration because the current dataset images are `600x400`, and
+  `384x256` preserves the same `3:2` aspect ratio while remaining divisible by
+  16 for the four encoder/decoder blocks.
 - Note: the paper discusses LOL images at `400x600`; this can be restored later
   by changing `image.width` and `image.height` in `configs/allie_base.yaml`,
   if the available hardware has enough memory.

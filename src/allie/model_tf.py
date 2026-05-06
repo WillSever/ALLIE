@@ -67,8 +67,6 @@ def build_allie_model(
             filters,
             (kernel_size, kernel_size),
             padding="same",
-            kernel_initializer="he_normal",
-            bias_initializer="zeros",
         )(x)
         x = layers.BatchNormalization()(x)
         x = layers.Activation("relu")(x)
@@ -80,8 +78,6 @@ def build_allie_model(
         bottleneck_filters,
         (kernel_size, kernel_size),
         padding="same",
-        kernel_initializer="he_normal",
-        bias_initializer="zeros",
     )
 
     def decoder_block(x, skip, filters):
@@ -92,8 +88,6 @@ def build_allie_model(
             filters,
             (kernel_size, kernel_size),
             padding="same",
-            kernel_initializer="he_normal",
-            bias_initializer="zeros",
         )(x)
         x = layers.BatchNormalization()(x)
         x = layers.Activation("relu")(x)
@@ -120,8 +114,6 @@ def build_allie_model(
         (kernel_size, kernel_size),
         activation="sigmoid",
         padding="same",
-        kernel_initializer="he_normal",
-        bias_initializer="zeros",
     )(u4)
 
     model = models.Model(inputs=inputs, outputs=outputs, name="ALLIE")

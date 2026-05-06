@@ -19,7 +19,7 @@ image:
   width: 320
   height: 240
 training:
-  batch_size: 2
+  batch_size: 1
 ```
 
 ## Why Python 3.12 Does Not Work Here
@@ -31,10 +31,11 @@ Use a Conda environment with Python 3.10.
 
 ## Conda Path
 
-If `conda` is not recognized in PowerShell, use the full path:
+If `conda` is not recognized in PowerShell, open Anaconda Prompt or use the
+Miniconda path from your own installation, for example:
 
 ```powershell
-& 'C:\Users\willi\miniconda3\Scripts\conda.exe' env list
+& "$env:USERPROFILE\miniconda3\Scripts\conda.exe" env list
 ```
 
 ## First-Time Conda Terms
@@ -42,9 +43,9 @@ If `conda` is not recognized in PowerShell, use the full path:
 If Conda asks you to accept the Terms of Service, run:
 
 ```powershell
-& 'C:\Users\willi\miniconda3\Scripts\conda.exe' tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
-& 'C:\Users\willi\miniconda3\Scripts\conda.exe' tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
-& 'C:\Users\willi\miniconda3\Scripts\conda.exe' tos accept --override-channels --channel https://repo.anaconda.com/pkgs/msys2
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/msys2
 ```
 
 Only run those commands if you agree with Anaconda's channel terms.
@@ -54,33 +55,33 @@ Only run those commands if you agree with Anaconda's channel terms.
 From the repository root:
 
 ```powershell
-& 'C:\Users\willi\miniconda3\Scripts\conda.exe' create -n myenv python=3.10 -y
+conda create -n myenv python=3.10 -y
 ```
 
 Activate it:
 
 ```powershell
-& 'C:\Users\willi\miniconda3\Scripts\activate.bat' myenv
+conda activate myenv
 ```
 
 If activation does not change the prompt, open "Anaconda Prompt" and run:
 
-```bat
-cd C:\Users\willi\Documents\Codex\2026-04-28\files-mentioned-by-the-user-allie\ALLIE
+```powershell
+cd path\to\ALLIE
 conda activate myenv
 ```
 
 ## Install GPU Dependencies
 
 ```powershell
-& 'C:\Users\willi\miniconda3\Scripts\conda.exe' install -n myenv -c conda-forge cudatoolkit=11.2 cudnn=8.1.0 -y
+conda install -n myenv -c conda-forge cudatoolkit=11.2 cudnn=8.1.0 -y
 ```
 
 Install Python packages:
 
 ```powershell
-& 'C:\Users\willi\miniconda3\envs\myenv\python.exe' -m pip install --upgrade pip
-& 'C:\Users\willi\miniconda3\envs\myenv\python.exe' -m pip install -r requirements-win-gpu-tf210.txt
+python -m pip install --upgrade pip
+python -m pip install -r requirements-win-gpu-tf210.txt
 ```
 
 ## Test TensorFlow GPU
@@ -107,7 +108,7 @@ python scripts\check_tf_gpu.py
 Alternative full-path test:
 
 ```powershell
-& 'C:\Users\willi\miniconda3\envs\myenv\python.exe' -c "import tensorflow as tf; print(tf.__version__); print(tf.config.list_physical_devices('GPU'))"
+python -c "import tensorflow as tf; print(tf.__version__); print(tf.config.list_physical_devices('GPU'))"
 ```
 
 Expected:
@@ -137,7 +138,19 @@ If training fails with memory allocation errors on an 8 GB GPU, keep
 Train:
 
 ```powershell
-python scripts\train_tf.py --config configs\allie_base.yaml
+python scripts\train_tf.py --config configs\allie_base.yaml --require-gpu
+```
+
+Train as a numbered local experiment:
+
+```powershell
+python scripts\train_tf.py --config configs\allie_base.yaml --require-gpu --new-run
+```
+
+Test the aspect-ratio preserving `384x256` config:
+
+```powershell
+python scripts\train_tf.py --config configs\allie_384x256.yaml --require-gpu --new-run
 ```
 
 Quick smoke test without saving a checkpoint:
@@ -156,4 +169,17 @@ Evaluate:
 
 ```powershell
 python scripts\evaluate_tf.py --config configs\allie_base.yaml
+```
+
+Create a local, numbered inference output folder without overwriting the
+publication images:
+
+```powershell
+python scripts\infer_tf.py --config configs\allie_base.yaml --new-run --checkpoint-path checkpoints\allie_base.h5
+```
+
+Run inference for a numbered training run:
+
+```powershell
+python scripts\infer_tf.py --config configs\allie_base.yaml --run-id treino_001
 ```

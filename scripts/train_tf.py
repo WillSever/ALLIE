@@ -16,10 +16,11 @@ if str(SRC) not in sys.path:
 
 import pandas as pd
 import tensorflow as tf
-from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
 from allie.config import get_path, load_config
 from allie.data import load_image_pairs
+from allie.experiments import apply_experiment_paths, resolve_run_id, save_config_snapshot
 from allie.model_tf import build_allie_model
 from allie.utils import ensure_parent, set_seed
 
@@ -58,6 +59,16 @@ def parse_args():
         action="store_true",
         help="Stop if TensorFlow does not detect a GPU.",
     )
+    parser.add_argument(
+        "--run-id",
+        default=None,
+        help="Save this training run under runs/RUN_ID/.",
+    )
+    parser.add_argument(
+        "--new-run",
+        action="store_true",
+        help="Create the next numbered run id, such as treino_001.",
+    )
     return parser.parse_args()
 
 
@@ -74,6 +85,16 @@ def get_tensorflow_gpus():
 def main():
     args = parse_args()
     config = load_config(args.config)
+
+    run_id = resolve_run_id(config, run_id=args.run_id, new_run=args.new_run)
+    if run_id:
+        apply_experiment_paths(
+            config,
+            run_id,
+            include_checkpoint=True,
+            include_outputs=True,
+        )
+        print(f"Experiment run id: {run_id}")
 
     set_seed(config["project"]["seed"])
     gpus = get_tensorflow_gpus()
@@ -92,7 +113,16 @@ def main():
     channels = config["image"]["channels"]
 
     checkpoint_path = get_path(config, "paths", "checkpoint_path")
-    history_path = checkpoint_path.with_suffix(".history.csv")
+    history_path = (
+        get_path(config, "paths", "history_path")
+        if "history_path" in config["paths"]
+        else checkpoint_path.with_suffix(".history.csv")
+    )
+    config_snapshot_path = (
+        get_path(config, "paths", "config_snapshot_path")
+        if "config_snapshot_path" in config["paths"]
+        else None
+    )
 
     if checkpoint_path.exists() and not args.overwrite and not args.no_save:
         print(f"Checkpoint already exists: {checkpoint_path}")
@@ -139,6 +169,17 @@ def main():
         patience=config["training"]["early_stopping_patience"],
         restore_best_weights=True,
     )
+    callbacks = [early_stop]
+    if not args.no_save:
+        ensure_parent(checkpoint_path)
+        checkpoint_cb = ModelCheckpoint(
+            filepath=str(checkpoint_path),
+            monitor="val_loss",
+            save_best_only=True,
+            mode="min",
+            verbose=1,
+        )
+        callbacks.append(checkpoint_cb)
 
     print("Training ALLIE...")
     history = model.fit(
@@ -147,7 +188,7 @@ def main():
         epochs=args.epochs or config["training"]["epochs"],
         batch_size=config["training"]["batch_size"],
         validation_split=config["training"]["validation_split"],
-        callbacks=[early_stop],
+        callbacks=callbacks,
         verbose=1,
     )
 
@@ -155,9 +196,13 @@ def main():
         print("Training finished. --no-save enabled, skipping checkpoint/history save.")
         return
 
-    ensure_parent(checkpoint_path)
-    model.save(str(checkpoint_path))
-    print(f"Model saved at: {checkpoint_path}")
+    if not checkpoint_path.exists():
+        model.save(str(checkpoint_path))
+    print(f"Best model checkpoint saved at: {checkpoint_path}")
+
+    if config_snapshot_path:
+        save_config_snapshot(config, config_snapshot_path)
+        print(f"Config snapshot saved at: {config_snapshot_path}")
 
     pd.DataFrame(history.history).to_csv(history_path, index=False)
     print(f"Training history saved at: {history_path}")

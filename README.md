@@ -153,15 +153,17 @@ Additional details are available in:
 
 If you use this repository in your research, please cite:
 
+```bibtex
 @inproceedings{rodrigues2025allie,
-  author    = {Gabrielly Rodrigues and João Calvalcanti and José Pio and Felipe Oliveira},
+  author    = {Gabrielly Rodrigues and João Cavalcanti and José Pio and Felipe Oliveira},
   title     = {ALLIE: Autoencoder-based Low-Light Image Enhancement},
   booktitle = {Anais do XVII Simpósio Brasileiro de Robótica e XVI Workshop de Robótica na Educação},
   location  = {Vitória, ES, Brazil},
   year      = {2025},
-  pages     = {249--254},
+  pages      = {249--254},
   publisher = {SBC},
   address   = {Porto Alegre, RS, Brazil},
   url       = {https://sol.sbc.org.br/index.php/sbrlars/article/view/39242}
 }
+```
 

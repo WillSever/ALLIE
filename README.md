@@ -1,25 +1,10 @@
 [![SBC OpenLib](https://img.shields.io/badge/SBC_OpenLib-article-179bd3)](https://sol.sbc.org.br/index.php/sbrlars/article/view/39242)
 
-# ALLIE
+# Autoencoder-based Low-Light Image Enhancer
 
-Autoencoder-based Low-Light Image Enhancer.
 
-ALLIE is a TensorFlow/Keras project for low-light image enhancement, organized
-from the original research notebook into a reusable repository for robotics and
-computer vision researchers.
+![Allie](allie.png)
 
-This repository currently focuses on the publication-oriented base ALLIE model:
-
-- four encoder blocks, following the submitted paper architecture;
-- self-attention in the bottleneck;
-- skip connections between encoder and decoder;
-- configurable dataset paths;
-- training, inference, and optional local evaluation scripts;
-- saved checkpoint for the reproduced result;
-- saved prediction and comparison images.
-
-No metric values are reported in this README. Evaluation CSV files are treated
-as local files so researchers can regenerate them on their own datasets.
 
 ## Repository Layout
 

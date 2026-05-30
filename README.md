@@ -2,9 +2,7 @@
 
 # Autoencoder-based Low-Light Image Enhancer
 
-
-![Allie](allie.png)
-
+![Autoencoder](enc.jpg)
 
 ## Repository Layout
 

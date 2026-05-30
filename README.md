@@ -3,7 +3,7 @@
 # Autoencoder-based Low-Light Image Enhancer
 
 <p align="center">
-  <img src="allie.png" alt="ALLIE Architecture" width="900">
+  <img src="enc.jpg" alt="ALLIE Architecture" width="900">
 </p>
 
 ---

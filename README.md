@@ -1,3 +1,5 @@
+[![SBC OpenLib](https://img.shields.io/badge/SBC_OpenLib-article-179bd3)](https://sol.sbc.org.br/index.php/sbrlars/article/view/39242)
+
 # ALLIE
 
 Autoencoder-based Low-Light Image Enhancer.
